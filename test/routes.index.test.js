@@ -9,6 +9,11 @@ chai.use(chaiHttp);
 const server = require("../src/server/index");
 const knex = require("../src/server/db/connection");
 
+after(done => {
+  server.close();
+  done();
+});
+
 describe("route: index", () => {
   describe("GET /", () => {
     it("should return json", done => {
@@ -91,6 +96,50 @@ describe("routes: movies", () => {
           res.body.message.should.eql("That movie does not exist.");
         });
       done();
+    });
+  });
+
+  describe("POST /api/v1/movies", () => {
+    it("should return the movie that was added", done => {
+      chai
+        .request(server)
+        .post("/api/v1/movies")
+        .send({
+          name: "Titanic",
+          genre: "Drama",
+          rating: 8,
+          explicit: true
+        })
+        .end((err, res) => {
+          should.not.exist(err);
+          res.status.should.equal(201);
+          res.type.should.equal("application/json");
+          res.body.status.should.eql("OK");
+          res.body.data[0].should.include.keys(
+            "id",
+            "name",
+            "genre",
+            "rating",
+            "explicit"
+          );
+          done();
+        });
+    });
+    it("should throw an error if the payload is malformed", done => {
+      chai
+        .request(server)
+        .post("/api/v1/movies")
+        .send({
+          name: "Titanic"
+        })
+        .end((err, res) => {
+          should.exist(err);
+          res.status.should.equal(400);
+          res.type.should.equal("application/json");
+          res.body.status.should.equal("KO");
+          should.exist(res.body.message);
+          done();
+        });
     });
   });
 });

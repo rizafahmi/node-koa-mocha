@@ -36,4 +36,29 @@ router.get(`${BASE_URL}/:id`, async function(ctx) {
   }
 });
 
+router.post(`${BASE_URL}`, async function(ctx) {
+  try {
+    const movie = await queries.addMovie(ctx.request.body);
+    if (movie.length > 0) {
+      ctx.status = 201;
+      ctx.body = {
+        status: "OK",
+        data: movie
+      };
+    } else {
+      ctx.status = 400;
+      ctx.body = {
+        status: "KO",
+        message: "Something went wrong."
+      };
+    }
+  } catch (err) {
+    ctx.status = 400;
+    ctx.body = {
+      status: "KO",
+      message: err.message || "Sorry, an error has occured."
+    };
+  }
+});
+
 module.exports = router;
