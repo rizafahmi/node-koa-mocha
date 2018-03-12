@@ -57,4 +57,40 @@ describe("routes: movies", () => {
         });
     });
   });
+
+  describe("GET /api/v1/movies/:id", () => {
+    it("should respond with a single movie object", done => {
+      chai
+        .request(server)
+        .get("/api/v1/movies/1")
+        .end((err, res) => {
+          should.not.exist(err);
+          res.status.should.equal(200);
+          res.type.should.equal("application/json");
+          res.body.status.should.eql("OK");
+          res.body.data[0].should.include.keys(
+            "id",
+            "name",
+            "genre",
+            "rating",
+            "explicit"
+          );
+          res.body.data.length.should.eql(1);
+          done();
+        });
+    });
+    it("should return error if movie does not exist", done => {
+      chai
+        .request(server)
+        .get("/api/v1/movies/99999")
+        .end((err, res) => {
+          should.exist(err);
+          res.status.should.equal(404);
+          res.type.should.equal("application/json");
+          res.body.status.should.eql("KO");
+          res.body.message.should.eql("That movie does not exist.");
+        });
+      done();
+    });
+  });
 });
