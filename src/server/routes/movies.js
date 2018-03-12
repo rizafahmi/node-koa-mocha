@@ -86,4 +86,29 @@ router.put(`${BASE_URL}/:id`, async function(ctx) {
   }
 });
 
+router.delete(`${BASE_URL}/:id`, async function(ctx) {
+  try {
+    const movie = await queries.deleteMovie(ctx.params.id);
+    if (movie.length > 0) {
+      ctx.status = 200;
+      ctx.body = {
+        status: "OK",
+        data: movie
+      };
+    } else {
+      ctx.status = 404;
+      ctx.body = {
+        status: "KO",
+        message: "That movie does not exist."
+      };
+    }
+  } catch (err) {
+    ctx.status = 400;
+    ctx.body = {
+      status: "KO",
+      message: err.message || "Sorry, error has occured."
+    };
+  }
+});
+
 module.exports = router;

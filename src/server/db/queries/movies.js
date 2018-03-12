@@ -17,9 +17,16 @@ const updateMovie = (id, movie) =>
     .where({ id: parseInt(id, 0) })
     .returning("*");
 
+const deleteMovie = id =>
+  knex("movies")
+    .del()
+    .where({ id: parseInt(id, 0) })
+    .returning("*");
+
 module.exports = {
   getAllMovies,
   getMovie,
   addMovie,
-  updateMovie
+  updateMovie,
+  deleteMovie
 };
