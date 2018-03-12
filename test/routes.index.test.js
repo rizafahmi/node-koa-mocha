@@ -142,4 +142,47 @@ describe("routes: movies", () => {
         });
     });
   });
+  describe("PUT /api/v1/movies", () => {
+    it("should return the movie that was updated", done => {
+      knex("movies")
+        .select("*")
+        .then(movies => {
+          const movie = movies[0];
+          chai
+            .request(server)
+            .put(`/api/v1/movies/${movie.id}`)
+            .send({ rating: 9 })
+            .end((err, res) => {
+              should.not.exist(err);
+              res.status.should.equal(200);
+              res.type.should.equal("application/json");
+              res.body.status.should.equal("OK");
+              res.body.data[0].should.include.keys(
+                "id",
+                "name",
+                "genre",
+                "rating",
+                "explicit"
+              );
+              const newMovie = res.body.data[0];
+              newMovie.rating.should.not.eql(movie.rating);
+              done();
+            });
+        });
+    });
+    it("should throw an error if the movie does not exist", done => {
+      chai
+        .request(server)
+        .put("/api/v1/movies/9999")
+        .send({ rating: 9 })
+        .end((err, res) => {
+          should.exist(err);
+          res.status.should.equal(404);
+          res.type.should.equal("application/json");
+          res.body.status.should.eql("KO");
+          res.body.message.should.eql("That movie does not exist.");
+          done();
+        });
+    });
+  });
 });

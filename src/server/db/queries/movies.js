@@ -11,8 +11,15 @@ const addMovie = movie =>
     .insert(movie)
     .returning("*");
 
+const updateMovie = (id, movie) =>
+  knex("movies")
+    .update(movie)
+    .where({ id: parseInt(id, 0) })
+    .returning("*");
+
 module.exports = {
   getAllMovies,
   getMovie,
-  addMovie
+  addMovie,
+  updateMovie
 };

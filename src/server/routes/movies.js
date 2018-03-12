@@ -61,4 +61,29 @@ router.post(`${BASE_URL}`, async function(ctx) {
   }
 });
 
+router.put(`${BASE_URL}/:id`, async function(ctx) {
+  try {
+    const movie = await queries.updateMovie(ctx.params.id, ctx.request.body);
+    if (movie.length > 0) {
+      ctx.status = 200;
+      ctx.body = {
+        status: "OK",
+        data: movie
+      };
+    } else {
+      ctx.status = 404;
+      ctx.body = {
+        status: "KO",
+        message: "That movie does not exist."
+      };
+    }
+  } catch (err) {
+    ctx.status = 400;
+    ctx.body = {
+      status: "KO",
+      message: err.message || "Sorry, an error has occured."
+    };
+  }
+});
+
 module.exports = router;
