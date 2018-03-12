@@ -1,14 +1,10 @@
 const Koa = require("koa");
+const router = require("./routes");
 
 const app = new Koa();
 const PORT = 1337;
 
-app.use(async ctx => {
-  ctx.body = {
-    status: "OK",
-    message: "Hello, KOA!"
-  };
-});
+app.use(router.routes());
 
 const server = app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);
